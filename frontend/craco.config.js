@@ -61,6 +61,35 @@ let webpackConfig = {
 };
 
 webpackConfig.devServer = (devServerConfig) => {
+  // Fix react-scripts 5 + webpack-dev-server 5 incompatibility
+  // 1) Convert deprecated onBefore/AfterSetupMiddleware to setupMiddlewares
+  const beforeHook = devServerConfig.onBeforeSetupMiddleware;
+  const afterHook = devServerConfig.onAfterSetupMiddleware;
+  if (beforeHook || afterHook) {
+    delete devServerConfig.onBeforeSetupMiddleware;
+    delete devServerConfig.onAfterSetupMiddleware;
+    const prevSetup = devServerConfig.setupMiddlewares;
+    devServerConfig.setupMiddlewares = (middlewares, devServer) => {
+      if (beforeHook) beforeHook(devServer);
+      const result = prevSetup ? prevSetup(middlewares, devServer) : middlewares;
+      if (afterHook) afterHook(devServer);
+      return result;
+    };
+  }
+  // 2) Convert deprecated `https` to `server`
+  if (devServerConfig.https !== undefined) {
+    const httpsOpts = devServerConfig.https;
+    delete devServerConfig.https;
+    if (httpsOpts) {
+      devServerConfig.server =
+        typeof httpsOpts === "object"
+          ? { type: "https", options: httpsOpts }
+          : { type: "https" };
+    }
+  }
+  // 3) Allow all hosts for preview proxies
+  devServerConfig.allowedHosts = "all";
+
   // Add health check endpoints if enabled
   if (config.enableHealthCheck && setupHealthEndpoints && healthPluginInstance) {
     const originalSetupMiddlewares = devServerConfig.setupMiddlewares;
