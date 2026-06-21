@@ -189,6 +189,16 @@ class BeforeAfter(BaseModel):
     before_url: str
     after_url: str
     description: str = ""
+    # Case study fields
+    patient_name: Optional[str] = None  # e.g., "Ahmet K."
+    patient_age: Optional[int] = None
+    problem: Optional[str] = None
+    treatment_duration: Optional[str] = None
+    doctor_name: Optional[str] = None
+    result_summary: Optional[str] = None
+    patient_quote: Optional[str] = None
+    is_representative: bool = True  # true => "temsili klinik vaka"
+    sessions: Optional[str] = None
     order: int = 0
     active: bool = True
     created_at: str = Field(default_factory=now_iso)
@@ -200,6 +210,15 @@ class BeforeAfterIn(BaseModel):
     before_url: str
     after_url: str
     description: str = ""
+    patient_name: Optional[str] = None
+    patient_age: Optional[int] = None
+    problem: Optional[str] = None
+    treatment_duration: Optional[str] = None
+    doctor_name: Optional[str] = None
+    result_summary: Optional[str] = None
+    patient_quote: Optional[str] = None
+    is_representative: bool = True
+    sessions: Optional[str] = None
     order: int = 0
     active: bool = True
 
@@ -749,26 +768,146 @@ async def seed():
 
     if await db.before_after.count_documents({}) == 0:
         ba_items = [
-            {"title": "Tek Diş İmplant Uygulaması", "category": "implant",
-             "before_url": "https://images.unsplash.com/photo-1620331311520-246422fd82f9?crop=entropy&cs=srgb&fm=jpg",
-             "after_url": "https://images.unsplash.com/photo-1581585504919-2dfa90b3b9ce?crop=entropy&cs=srgb&fm=jpg",
-             "description": "Üst çene ön bölgede tek diş implantı", "order": 1},
-            {"title": "Şeffaf Plak Ortodonti Tedavisi", "category": "ortodonti",
-             "before_url": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?crop=entropy&cs=srgb&fm=jpg",
-             "after_url": "https://images.unsplash.com/photo-1581585504919-2dfa90b3b9ce?crop=entropy&cs=srgb&fm=jpg",
-             "description": "18 ay süren yetişkin ortodonti tedavisi", "order": 2},
-            {"title": "Lamine Veneer ile Gülüş Tasarımı", "category": "gulus_tasarimi",
-             "before_url": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?crop=entropy&cs=srgb&fm=jpg",
-             "after_url": "https://images.pexels.com/photos/11928561/pexels-photo-11928561.jpeg",
-             "description": "Üst çene 8 diş lamine veneer", "order": 3},
-            {"title": "Klinik Beyazlatma", "category": "beyazlatma",
-             "before_url": "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?crop=entropy&cs=srgb&fm=jpg",
-             "after_url": "https://images.unsplash.com/photo-1677026010083-78ec7f1b84ed?crop=entropy&cs=srgb&fm=jpg",
-             "description": "Tek seans klinik tipi beyazlatma uygulaması", "order": 4},
+            {
+                "title": "Ön Diş İmplant Vakası",
+                "category": "implant",
+                "before_url": "https://images.unsplash.com/photo-1620331311520-246422fd82f9?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1581585504919-2dfa90b3b9ce?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "Travma sonrası kaybedilen ön diş, implant ile yeniden kazandırıldı.",
+                "patient_name": "Ahmet K.",
+                "patient_age": 34,
+                "problem": "Spor kazası sonrası kırılan ön diş ve estetik kayıp",
+                "treatment_duration": "5 gün",
+                "doctor_name": "Dr. Mehmet Yılmaz",
+                "result_summary": "Doğal görünümlü, fonksiyonel ön diş restorasyonu",
+                "patient_quote": "Artık fotoğraflarda gülümsemekten çekinmiyorum.",
+                "is_representative": True,
+                "sessions": "2 seans",
+                "order": 1,
+            },
+            {
+                "title": "All-on-4 Tam Çene İmplant",
+                "category": "implant",
+                "before_url": "https://images.unsplash.com/photo-1588776814546-daab30f310ce?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.pexels.com/photos/5355921/pexels-photo-5355921.jpeg",
+                "description": "Tam dişsiz alt çenede All-on-4 implant uygulaması.",
+                "patient_name": "Hasan B.",
+                "patient_age": 58,
+                "problem": "Tam dişsizlik ve hareketli protez konforsuzluğu",
+                "treatment_duration": "3 ay",
+                "doctor_name": "Dr. Mehmet Yılmaz",
+                "result_summary": "Sabit ve konforlu çiğneme fonksiyonu",
+                "patient_quote": "Yıllar sonra tekrar normal yemek yiyebiliyorum.",
+                "is_representative": True,
+                "sessions": "4 seans + iyileşme",
+                "order": 2,
+            },
+            {
+                "title": "Yetişkin Şeffaf Plak Ortodonti",
+                "category": "ortodonti",
+                "before_url": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1581585504919-2dfa90b3b9ce?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "Yetişkin hasta için şeffaf plak ile çapraşıklık tedavisi.",
+                "patient_name": "Zeynep Y.",
+                "patient_age": 27,
+                "problem": "Ön bölgede çapraşıklık ve dudaktan görünür düzensiz dişler",
+                "treatment_duration": "14 ay",
+                "doctor_name": "Dr. Ayşe Kaya",
+                "result_summary": "Düzgün, simetrik diş dizilimi",
+                "patient_quote": "Braket olmadan tedavi olabilmek hayat kurtardı.",
+                "is_representative": True,
+                "sessions": "Aylık kontroller",
+                "order": 3,
+            },
+            {
+                "title": "Çocuk Ortodonti — Erken Müdahale",
+                "category": "ortodonti",
+                "before_url": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1667133295315-820bb6481730?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "11 yaş hastada gelişimsel ortodonti müdahalesi.",
+                "patient_name": "Elif D.",
+                "patient_age": 11,
+                "problem": "Üst çene darlığı ve çapraz kapanış",
+                "treatment_duration": "10 ay",
+                "doctor_name": "Dr. Ayşe Kaya",
+                "result_summary": "Doğru kapanış ve daha sağlıklı gelişim",
+                "patient_quote": "Anne: Kızımın özgüveni çok arttı.",
+                "is_representative": True,
+                "sessions": "Aylık kontroller",
+                "order": 4,
+            },
+            {
+                "title": "Dijital Gülüş Tasarımı (Lamine Veneer)",
+                "category": "gulus_tasarimi",
+                "before_url": "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.pexels.com/photos/11928561/pexels-photo-11928561.jpeg",
+                "description": "Üst çenede 8 diş lamine veneer ile estetik dönüşüm.",
+                "patient_name": "Selin A.",
+                "patient_age": 31,
+                "problem": "Renk değişikliği, asimetrik diş kenarları, gülüş hattı uyumsuzluğu",
+                "treatment_duration": "10 gün",
+                "doctor_name": "Dr. Selin Demir",
+                "result_summary": "Doğal görünümlü, simetrik ve aydınlık gülüş",
+                "patient_quote": "Sonucu daha tedavi başlamadan dijital olarak gördüm, harikaydı.",
+                "is_representative": True,
+                "sessions": "3 seans",
+                "order": 5,
+            },
+            {
+                "title": "Düğün Öncesi Gülüş Tasarımı",
+                "category": "gulus_tasarimi",
+                "before_url": "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1677026010083-78ec7f1b84ed?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "Düğün öncesi hızlı estetik dönüşüm planı.",
+                "patient_name": "Merve K.",
+                "patient_age": 28,
+                "problem": "Düğün fotoğrafları öncesi diş rengi ve form düzensizliği",
+                "treatment_duration": "2 hafta",
+                "doctor_name": "Dr. Selin Demir",
+                "result_summary": "Düğün gününe yetişen ışıltılı, doğal gülüş",
+                "patient_quote": "Düğünümde tüm fotoğraflarda mutlu gülümsedim.",
+                "is_representative": True,
+                "sessions": "4 seans",
+                "order": 6,
+            },
+            {
+                "title": "Tek Seans Klinik Beyazlatma",
+                "category": "beyazlatma",
+                "before_url": "https://images.unsplash.com/photo-1588776813677-77aaf5595b83?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1677026010083-78ec7f1b84ed?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "Lekeli dişlerde tek seans klinik tipi profesyonel beyazlatma.",
+                "patient_name": "Burak T.",
+                "patient_age": 36,
+                "problem": "Kahve, çay tüketimine bağlı yoğun yüzey lekeleri",
+                "treatment_duration": "1 seans (45 dk)",
+                "doctor_name": "Dr. Burak Aslan",
+                "result_summary": "5 ton daha beyaz, doğal görünümlü diş rengi",
+                "patient_quote": "45 dakikada bu kadar değişeceğine inanmamıştım.",
+                "is_representative": True,
+                "sessions": "1 seans",
+                "order": 7,
+            },
+            {
+                "title": "Kombine Beyazlatma + Veneer",
+                "category": "beyazlatma",
+                "before_url": "https://images.unsplash.com/photo-1620331311520-246422fd82f9?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "after_url": "https://images.unsplash.com/photo-1677026010083-78ec7f1b84ed?crop=entropy&cs=srgb&fm=jpg&q=85",
+                "description": "Tetrasiklin lekelerine kombine yaklaşım.",
+                "patient_name": "Derya M.",
+                "patient_age": 42,
+                "problem": "Antibiyotiğe bağlı tetrasiklin lekeleri",
+                "treatment_duration": "3 hafta",
+                "doctor_name": "Dr. Selin Demir",
+                "result_summary": "Yıllardır gizlemeye çalıştığı dişler artık doğal beyaz",
+                "patient_quote": "İlk kez utanmadan gülümsüyorum.",
+                "is_representative": True,
+                "sessions": "5 seans",
+                "order": 8,
+            },
         ]
         for b in ba_items:
             await db.before_after.insert_one(BeforeAfter(**b).model_dump())
-        logger.info("Before/After seeded")
+        logger.info("Before/After case studies seeded")
 
     if await db.faqs.count_documents({}) == 0:
         faqs = [

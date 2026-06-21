@@ -72,7 +72,7 @@ export default function HomePage() {
       <Hero onAppointmentClick={() => openAppointment()} />
       <TrustStats />
       <FeaturedTreatments treatments={treatments} onAppointmentClick={openAppointment} />
-      <BeforeAfter />
+      <BeforeAfter onAppointmentClick={openWithSlug} />
       <Doctors doctors={doctors} onAppointmentClick={openAppointment} />
       <Testimonials items={testimonials} />
       <WhyDentalin />
