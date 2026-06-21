@@ -13,6 +13,7 @@ import {
   Home,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { Logo } from "../components/brand/Logo";
 import DashboardTab from "../components/admin/DashboardTab";
 import AppointmentsTab from "../components/admin/AppointmentsTab";
 import LeadsTab from "../components/admin/LeadsTab";
@@ -47,17 +48,7 @@ export default function AdminPage() {
       {/* Sidebar */}
       <aside className="hidden lg:flex lg:flex-col w-64 bg-white border-r border-slate-200 shrink-0">
         <div className="p-5 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center">
-              <span className="text-white font-bold font-display">D</span>
-            </div>
-            <div>
-              <div className="font-bold font-display">Dentalin</div>
-              <div className="text-[10px] text-cyan-700 uppercase tracking-widest font-semibold">
-                Admin
-              </div>
-            </div>
-          </div>
+          <Logo size={36} />
         </div>
 
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">

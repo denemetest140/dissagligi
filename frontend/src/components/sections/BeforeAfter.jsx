@@ -16,6 +16,7 @@ import {
   Move,
 } from "lucide-react";
 import { api, waLink } from "../../lib/api";
+import { trackInteraction } from "../../lib/socialProof";
 
 const categories = [
   { id: "all", label: "Tüm Vakalar" },
@@ -165,6 +166,12 @@ function TrustBadge({ icon: Icon, label, color = "cyan" }) {
 function CaseCard({ item, onAppointmentClick }) {
   const waMsg = `Merhaba, "${item.title}" vakasını gördüm. Bende benzer bir durum var, bilgi almak istiyorum.`;
 
+  const handleWa = () => trackInteraction(item.category, "wa_click");
+  const handleApt = () => {
+    trackInteraction(item.category, "appointment_open");
+    onAppointmentClick(item.category);
+  };
+
   return (
     <motion.article
       data-testid={`case-card-${item.id}`}
@@ -295,6 +302,7 @@ function CaseCard({ item, onAppointmentClick }) {
             href={waLink(waMsg)}
             target="_blank"
             rel="noreferrer"
+            onClick={handleWa}
             className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#25D366] hover:bg-[#1eb955] text-white rounded-full text-sm font-semibold transition-colors"
           >
             <MessageCircle className="w-4 h-4" />
@@ -302,7 +310,7 @@ function CaseCard({ item, onAppointmentClick }) {
           </a>
           <button
             data-testid={`case-apt-${item.id}`}
-            onClick={() => onAppointmentClick(item.category)}
+            onClick={handleApt}
             className="inline-flex items-center justify-center gap-2 px-4 py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full text-sm font-semibold transition-colors"
           >
             <Calendar className="w-4 h-4" />

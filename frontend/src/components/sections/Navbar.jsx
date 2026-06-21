@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Menu, X, Calendar, Phone } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { telLink } from "../../lib/api";
+import { Logo } from "../brand/Logo";
 
 const navLinks = [
   { label: "Tedaviler", target: "#tedaviler" },
@@ -46,19 +47,9 @@ export default function Navbar({ onAppointmentClick }) {
               e.preventDefault();
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
-            className="flex items-center gap-2"
+            className="flex items-center"
           >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-lg font-display">D</span>
-            </div>
-            <div>
-              <div className={`font-bold font-display text-lg leading-none ${scrolled ? "text-slate-900" : "text-white"}`}>
-                Dentalin
-              </div>
-              <div className={`text-[10px] font-medium uppercase tracking-widest ${scrolled ? "text-cyan-700" : "text-cyan-300"}`}>
-                Diş Sağlığı Merkezi
-              </div>
-            </div>
+            <Logo size={40} theme={scrolled ? "light" : "dark"} />
           </a>
 
           <nav className="hidden lg:flex items-center gap-1">

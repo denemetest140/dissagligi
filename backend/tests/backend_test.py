@@ -83,6 +83,71 @@ class TestPublic:
         assert all(b["category"] == "implant" for b in data)
         assert len(data) >= 1
 
+    def test_before_after_case_fields(self, session):
+        r = session.get(f"{API}/public/before-after", timeout=15)
+        data = r.json()
+        # at least one record should have full case-study fields
+        assert any(
+            b.get("patient_name") and b.get("patient_age") and b.get("problem") and b.get("result_summary")
+            for b in data
+        )
+
+
+# ---------- Social proof / tracking ----------
+class TestSocialProof:
+    def test_track_returns_ok_and_persists(self, session):
+        r = session.post(
+            f"{API}/public/track",
+            json={"treatment_slug": "implant", "type": "wa_click"},
+            headers={"Content-Type": "application/json", "User-Agent": "PYTEST-UA-track-1"},
+            timeout=15,
+        )
+        assert r.status_code == 200
+        assert r.json() == {"ok": True}
+
+    def test_social_proof_structure(self, session):
+        r = session.get(f"{API}/public/social-proof", timeout=15)
+        assert r.status_code == 200
+        d = r.json()
+        assert "counts" in d and isinstance(d["counts"], dict)
+        assert "as_of" in d and isinstance(d["as_of"], str)
+
+    def test_track_dedup_same_ua_counts_once_per_slug(self, session):
+        # Use a brand new slug-like marker so we don't collide with seed
+        slug = "ortodonti"
+        # Get baseline count for ortodonti
+        baseline = session.get(f"{API}/public/social-proof").json()["counts"].get(slug, 0)
+
+        ua = "PYTEST-UA-dedup-FIXED"
+        for _ in range(4):
+            r = session.post(
+                f"{API}/public/track",
+                json={"treatment_slug": slug, "type": "wa_click"},
+                headers={"Content-Type": "application/json", "User-Agent": ua},
+                timeout=15,
+            )
+            assert r.status_code == 200
+
+        after = session.get(f"{API}/public/social-proof").json()["counts"].get(slug, 0)
+        # Same IP+UA → should contribute exactly 1 (or 0 increment if already tracked today by this UA)
+        delta = after - baseline
+        assert delta in (0, 1), f"Expected dedup delta 0/1, got {delta}"
+
+    def test_track_distinct_ua_counts_multiple(self, session):
+        slug = "beyazlatma"
+        baseline = session.get(f"{API}/public/social-proof").json()["counts"].get(slug, 0)
+        for i in range(3):
+            r = session.post(
+                f"{API}/public/track",
+                json={"treatment_slug": slug, "type": "wa_click"},
+                headers={"Content-Type": "application/json", "User-Agent": f"PYTEST-UA-multi-{i}-X"},
+                timeout=15,
+            )
+            assert r.status_code == 200
+        after = session.get(f"{API}/public/social-proof").json()["counts"].get(slug, 0)
+        # Each distinct UA should be counted (at least 3 newly added OR pre-existing dedup if same UA collisions). Expect delta in {0..3}; check at least delta>=0 and final >=3
+        assert after >= 3, f"Expected counts[{slug}] >= 3, got {after}"
+
 
 # ---------- Public POST flows ----------
 class TestAppointmentAndLead:

@@ -6,6 +6,7 @@ import { Label } from "../components/ui/label";
 import { Lock, Mail, Loader2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { formatApiError } from "../lib/api";
+import { Logo } from "../components/brand/Logo";
 import { toast } from "sonner";
 
 export default function LoginPage() {
@@ -57,16 +58,8 @@ export default function LoginPage() {
 
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg">
-              <span className="text-white font-bold text-xl font-display">D</span>
-            </div>
-            <div>
-              <div className="font-bold font-display text-xl">Dentalin</div>
-              <div className="text-[10px] font-medium uppercase tracking-widest text-cyan-700">
-                Yönetici Paneli
-              </div>
-            </div>
+          <div className="mb-8">
+            <Logo size={44} />
           </div>
 
           <h2 className="text-3xl font-bold text-slate-900 font-display">Tekrar Hoş Geldiniz</h2>

@@ -306,6 +306,11 @@ class QuizIn(BaseModel):
     phone: Optional[str] = None
 
 
+class InteractionIn(BaseModel):
+    treatment_slug: str
+    type: Literal["wa_click", "appointment_open", "appointment_complete", "card_view"] = "wa_click"
+
+
 # ---------- Auth ----------
 @api.post("/auth/login")
 async def login(payload: LoginIn, response: Response):
@@ -437,6 +442,47 @@ async def quiz(payload: QuizIn):
         "recommendation_name": tr_names[recommendation],
         "scores": scores,
     }
+
+
+def _today_start_iso() -> str:
+    now = datetime.now(timezone.utc)
+    return datetime(now.year, now.month, now.day, tzinfo=timezone.utc).isoformat()
+
+
+@api.post("/public/track")
+async def track_interaction(payload: InteractionIn, request: Request):
+    ip = request.client.host if request.client else ""
+    ua = request.headers.get("user-agent", "")
+    ip_hash = str(hash(f"{ip}|{ua}"))[:16]
+    doc = {
+        "id": str(uuid.uuid4()),
+        "treatment_slug": payload.treatment_slug,
+        "type": payload.type,
+        "ip_hash": ip_hash,
+        "created_at": now_iso(),
+    }
+    await db.interactions.insert_one(doc)
+    return {"ok": True}
+
+
+@api.get("/public/social-proof")
+async def social_proof():
+    """Real counts: distinct visitors who interacted with each treatment today."""
+    start = _today_start_iso()
+    pipeline = [
+        {"$match": {"created_at": {"$gte": start}}},
+        {"$group": {
+            "_id": {"slug": "$treatment_slug", "ip": "$ip_hash"},
+        }},
+        {"$group": {
+            "_id": "$_id.slug",
+            "count": {"$sum": 1},
+        }},
+    ]
+    out = {}
+    async for row in db.interactions.aggregate(pipeline):
+        out[row["_id"]] = row["count"]
+    return {"counts": out, "as_of": now_iso()}
 
 
 # ---------- Admin Stats ----------
@@ -930,6 +976,8 @@ async def startup():
     await db.treatments.create_index("slug", unique=True)
     await db.appointments.create_index("created_at")
     await db.leads.create_index("created_at")
+    await db.interactions.create_index("created_at")
+    await db.interactions.create_index([("treatment_slug", 1), ("created_at", -1)])
     await seed()
     logger.info("Dentalin API started")
 
