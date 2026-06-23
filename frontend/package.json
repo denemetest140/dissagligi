@@ -135,15 +135,17 @@
     "**/micromatch/picomatch": "2.3.2",
     "**/readdirp/picomatch": "2.3.2",
     "**/jest-util/picomatch": "2.3.2",
-    "**/tinyglobby/picomatch": "4.0.4"
-  },
-    "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
-  "engines": {
-    "node": "20.x"
-  }
-  "scripts": {
+  "**/tinyglobby/picomatch": "4.0.4"
+},
+
+"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+
+"engines": {
+  "node": "20.x"
+},
+
+"scripts": {
   "start": "craco start",
   "build": "craco build",
-  "vercel-build": "npm install --legacy-peer-deps && npm run build"
-}
+  "vercel-build": "craco build"
 }
